@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument('model_cfg', help='model config path')
     parser.add_argument('checkpoint', help='model checkpoint path')
     parser.add_argument('img', help='image used to convert model model')
+    parser.add_argument("--text", default=None, type=str, help="text prompt for groundingdino")
     parser.add_argument(
         '--test-img',
         default=None,
@@ -110,7 +111,7 @@ def main():
     pipeline_funcs = [
         torch2onnx, torch2torchscript, extract_model, create_calib_input_data
     ]
-    PIPELINE_MANAGER.enable_multiprocess(True, pipeline_funcs)
+    PIPELINE_MANAGER.enable_multiprocess(False, pipeline_funcs)
     PIPELINE_MANAGER.set_log_level(log_level, pipeline_funcs)
 
     deploy_cfg_path = args.deploy_cfg
@@ -146,7 +147,8 @@ def main():
         deploy_cfg_path,
         model_cfg_path,
         checkpoint_path,
-        device=args.device)
+        device=args.device,
+        text=args.text)
 
     # convert backend
     ir_files = [osp.join(args.work_dir, ir_save_file)]
